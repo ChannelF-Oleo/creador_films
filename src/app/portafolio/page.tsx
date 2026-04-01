@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Portafolio — CREADOR FILMS",
         description: "Explora el portafolio completo de CREADOR FILMS. Fotografía editorial, moda, calle, cultura y documental.",
-        url: "https://creadorfilms.com/portafolio",
+        url: "https://elchefdelasfotos.com/portafolio",
         siteName: "Creador Films",
         images: [
             {

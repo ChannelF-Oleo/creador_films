@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://creadorfilms.com"),
+  metadataBase: new URL("https://elchefdelasfotos.com"),
   title: {
     default: "CREADOR FILMS — Fotografía Urbana Editorial",
     template: "%s | CREADOR FILMS",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CREADOR FILMS — Estética del Asfalto",
     description: "Fotografía documental, editorial y de moda desde las calles.",
-    url: "https://creadorfilms.com",
+    url: "https://elchefdelasfotos.com",
     siteName: "Creador Films",
     locale: "es_ES",
     type: "website",

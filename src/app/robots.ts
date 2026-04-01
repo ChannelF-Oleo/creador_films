@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/api/', '/admin/'],
         },
-        sitemap: 'https://creadorfilms.com/sitemap.xml',
+        sitemap: 'https://elchefdelasfotos.com/sitemap.xml',
     };
 }
