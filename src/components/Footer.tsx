@@ -27,8 +27,11 @@ export default function Footer() {
                     <a href="mailto:creadorfilms89@gmail.com" className="hover:text-[#F5F0E8] transition-colors duration-300">
                         creadorfilms89@gmail.com
                     </a>
-                    <a href="tel:+18292971687" className="hover:text-[#F5F0E8] transition-colors duration-300">
+                    <a href="tel:+18292971687" className="hover:text-[#F5F0E8] transition-colors duration-300 mb-2">
                         +1 829-297-1687
+                    </a>
+                    <a href="/admin/login" className="text-[#8A8A8A]/50 hover:text-[#F5F0E8] transition-colors duration-300 flex items-center gap-2 mt-4 pt-4 border-t border-[#8A8A8A]/20">
+                        Acceso Fotógrafo
                     </a>
                 </div>
 
