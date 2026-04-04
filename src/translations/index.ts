@@ -156,7 +156,7 @@ export const translations = {
             mastheadLabel1: "EDITION",
             mastheadLabel2: "2026",
             mastheadLabel3: "VOL. I",
-            mastheadRule: "Three series — One photographer — Zero filters",
+            mastheadRule: "Series — that narrate — stories",
             editoriales: [
                 {
                     issue: "01",
