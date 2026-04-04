@@ -137,7 +137,7 @@ export const translations = {
             scroll: "Scroll"
         },
         about: {
-            chef: "the photography chef",
+            chef: "the chef",
             description1: "My work captures the tension between the fleeting and the eternal — the moment when any corner becomes a stage.",
             description2: "I work with brands, artists, and communities. From fashion editorials to rural documentaries; always with the same visual honesty.",
             ingredientsTitle: "Ingredients:",
@@ -193,7 +193,7 @@ export const translations = {
             ],
             combo: {
                 badge: "EXCLUSIVE COLLAB",
-                title: "THE BAD-ASS\nCOMBO",
+                title: "The Bad-Ass\nCombo",
                 copy1: "Session + Makeup + Hair with",
                 copy2: "The full team so the vibe is felt from the first click.",
                 cta: "BOOK SPACE",
@@ -202,7 +202,7 @@ export const translations = {
         },
         planes: {
             eyebrow: "Invest in your image",
-            title: "Plans & Pricing",
+            title: "Plans",
             desc: "Sessions designed to bring out your best version with an editorial and urban focus.",
             currency: "USD $",
             decimals: ".00",
