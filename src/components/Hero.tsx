@@ -88,28 +88,65 @@ const ScrollIndicator = memo(function ScrollIndicator() {
     );
 });
 
+import { useLanguage } from "@/context/LanguageContext";
+
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function Hero() {
+    const { t } = useLanguage();
+
     return (
         <section id="hero" className="hero-section" aria-label="Portada">
             <HeroBackground />
 
             <div className="section-container relative z-40 h-full flex flex-col justify-center">
                 <div className="hero-content-wrapper">
-                    <HeroEyebrow />
+                    <div className="hero-eyebrow animate-fadeUp">
+                        <span className="hero-line" aria-hidden="true" />
+                        <p className="font-mono-urban text-bone/80">{t.hero.eyebrow}</p>
+                    </div>
 
                     <h1 className="font-gothic hero-title animate-fadeUp [animation-delay:0.2s]">
-                        El chef{" "}
+                        {t.hero.title.split(" ").slice(0, 2).join(" ")}
                         <br className="hidden sm:block" />
-                        de las fotos
+                        {t.hero.title.split(" ").slice(2).join(" ")}
                     </h1>
 
-                    <HeroServices />
-                    <HeroActions />
+                    <div className="hero-subtitle-container animate-fadeUp [animation-delay:0.4s]">
+                        <p className="hero-subtitle">
+                            {t.hero.services.map((service, i) => (
+                                <span key={service}>
+                                    {service}
+                                    {i < t.hero.services.length - 1 && (
+                                        <span className="hero-separator" aria-hidden="true"> / </span>
+                                    )}
+                                </span>
+                            ))}
+                        </p>
+                    </div>
+                    
+                    <div className="hero-actions animate-fadeUp [animation-delay:0.6s]">
+                        <Link href="/portafolio" className="btn-urban">
+                            {t.hero.cta1}
+                        </Link>
+
+                        <Link href="/#contacto"
+                            className="btn-urban-outline"
+                            aria-label="Ir a la sección de contacto para reservar"
+                        >
+                            {t.hero.cta2}
+                        </Link>
+                    </div >
                 </div>
             </div>
 
-            <ScrollIndicator />
+            <div className="hero-scroll-indicator animate-fadeIn" aria-hidden="true">
+                <span className="font-mono-urban text-cement uppercase text-[10px] tracking-widest">
+                    {t.hero.scroll}
+                </span>
+                <div className="scroll-line-wrapper">
+                    <div className="scroll-line-active" />
+                </div>
+            </div>
 
             {/* Textura de Grano */}
             <div className="grain-layer" aria-hidden="true" />

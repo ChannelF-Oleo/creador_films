@@ -3,18 +3,7 @@
 import { useEffect, useState, useCallback, memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
-// ── Constantes ────────────────────────────────────────────────────────────────
-const WA_TEXT = encodeURIComponent("Klk mio, me gustaria agendar una sesion de fotos");
-const WA_LINK = `https://wa.me/18292971687?text=${WA_TEXT}`;
-
-const NAV_LINKS = [
-    { href: "/#hero", label: "Inicio" },
-    { href: "/#chef", label: "Chef" },
-    { href: "/#servicios", label: "Servicios" },
-    { href: "/#planes", label: "Planes" },
-    { href: "/portafolio", label: "Portafolio" },
-] as const;
+import { useLanguage } from "@/context/LanguageContext";
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
 const HamburgerIcon = memo(function HamburgerIcon({ open }: { open: boolean }) {
@@ -29,8 +18,17 @@ const HamburgerIcon = memo(function HamburgerIcon({ open }: { open: boolean }) {
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function Navbar() {
+    const { t } = useLanguage();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+
+    const NAV_LINKS = [
+        { href: "/#hero", label: t.nav.inicio },
+        { href: "/#chef", label: t.nav.chef },
+        { href: "/#servicios", label: t.nav.servicios },
+        { href: "/#planes", label: t.nav.planes },
+        { href: "/portafolio", label: t.nav.portafolio },
+    ] as const;
 
     // Scroll listener — passive + cleanup
     useEffect(() => {
@@ -98,7 +96,7 @@ export default function Navbar() {
                             className="navbar-cta"
                             aria-label="Ir a la sección de contacto"
                         >
-                            Reserva
+                            {t.nav.reserva}
                         </Link>
                     </div>
 
@@ -115,7 +113,7 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile overlay — fuera del <nav> para no afectar z-index del navbar */}
+            {/* Mobile overlay */}
             <div
                 id="mobile-menu"
                 className={`mobile-menu ${menuOpen ? "mobile-menu--open" : ""}`}
@@ -125,7 +123,7 @@ export default function Navbar() {
                 aria-label="Menú de navegación"
             >
                 <ul className="mobile-menu-links" role="list">
-                    {[...NAV_LINKS, { href: "/#contacto", label: "Reserva" } as const].map(
+                    {[...NAV_LINKS, { href: "/#contacto", label: t.nav.reserva } as const].map(
                         ({ href, label }, i) => (
                             <li
                                 key={href}
@@ -136,8 +134,6 @@ export default function Navbar() {
                                     href={href}
                                     className="mobile-menu-link font-gothic"
                                     onClick={closeMenu}
-                                    target={href.startsWith("http") ? "_blank" : undefined}
-                                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                                     tabIndex={menuOpen ? 0 : -1}
                                 >
                                     {label}
@@ -150,4 +146,3 @@ export default function Navbar() {
         </>
     );
 }
-

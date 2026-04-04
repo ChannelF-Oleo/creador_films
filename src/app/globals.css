@@ -1567,3 +1567,58 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--bone);
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MODERN SERVICES LAYOUT (i18n REFACTOR)
+   ═══════════════════════════════════════════════════════════ */
+
+.services-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .services-layout {
+    grid-template-columns: 350px 1fr;
+    gap: 8rem;
+  }
+}
+
+.masthead-sticky {
+  position: sticky;
+  top: 8rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorial-spread {
+  margin-bottom: 12rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.spread-header {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.spread-pull-line {
+  display: block;
+}
+
+/* Fix for gallery grid items */
+.services-content .grid {
+  gap: 1.5rem;
+}
+
+.services-content img {
+  filter: grayscale(0.2) contrast(1.1) brightness(0.9);
+  transition: filter 0.5s ease;
+}
+
+.services-content div:hover img {
+  filter: grayscale(0) contrast(1) brightness(1);
+}
