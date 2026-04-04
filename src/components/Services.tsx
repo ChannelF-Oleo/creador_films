@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useState, useCallback, useEffect } from "react";
 import useReveal from "@/hooks/useReveal";
 import { useLanguage } from "@/context/LanguageContext";
 
-// ── Constantes Visuales (Se mantienen aquí para fácil edición de rutas) ───────
+// ── Constantes Visuales ───────────────────────────────────────────────────────
 const EDITORIAL_ASSETS = [
     {
         issue: "01",
@@ -14,8 +14,8 @@ const EDITORIAL_ASSETS = [
     },
     {
         issue: "02",
-        mainImg: "/cultura.avif",
-        thumbs: ["/street.avif", "/urban.avif", "culture2.avif", "/street2.avif"],
+        mainImg: "/street2.avif",
+        thumbs: ["/street.avif", "/urban.avif", "/culture2.avif", "/cultura.avif", "/street_studio.avif", "/street_studio2.avif"],
     },
     {
         issue: "03",
@@ -24,18 +24,92 @@ const EDITORIAL_ASSETS = [
     },
     {
         issue: "04",
-        mainImg: "/rural4.avif", // Replace with Salvaje if you have them, using street for now
+        mainImg: "/rural4.avif",
         thumbs: ["/rural.avif", "/rural2.avif", "/rural3.avif"],
     },
 ] as const;
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
 
+/** Lightbox minimalista tipo editorial */
+const Lightbox = ({ images, title, onClose }: { images: string[], title: string, onClose: () => void }) => {
+    const [index, setIndex] = useState(0);
+
+    // Bloquear scroll
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+        return () => { document.body.style.overflow = "auto"; };
+    }, []);
+
+    const next = () => setIndex((prev) => (prev + 1) % images.length);
+    const prev = () => setIndex((prev) => (prev - 1 + images.length) % images.length);
+
+    return (
+        <div
+            className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center animate-fadeIn p-4 md:p-10"
+            role="dialog"
+            aria-modal="true"
+            onClick={onClose}
+        >
+            {/* Header del Lightbox */}
+            <header className="absolute top-0 left-0 w-full p-6 flex justify-end items-center z-10">
+                <button
+                    onClick={onClose}
+                    className="text-[#F5F0E8] hover:rotate-90 transition-transform duration-300 p-2 bg-black/20 rounded-full"
+                    aria-label="Cerrar galería"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </header>
+
+            {/* Imagen Principal */}
+            <div
+                className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <button onClick={prev} className="absolute left-0 z-20 p-4 text-white hover:scale-110 transition-transform">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M15 18l-6-6 6-6" /></svg>
+                </button>
+
+                <div className="relative w-full h-full animate-fadeUp">
+                    <Image
+                        src={images[index]}
+                        alt={`Slide ${index + 1}`}
+                        fill
+                        className="object-contain"
+                        priority
+                    />
+                </div>
+
+                <button onClick={next} className="absolute right-0 z-20 p-4 text-white hover:scale-110 transition-transform">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><path d="M9 18l6-6-6-6" /></svg>
+                </button>
+            </div>
+
+            {/* Tiras de control */}
+            <footer className="absolute bottom-6 flex gap-3 z-10 px-6 overflow-x-auto max-w-full">
+                {images.map((src, i) => (
+                    <button
+                        key={i}
+                        onClick={(e) => { e.stopPropagation(); setIndex(i); }}
+                        className={`relative w-12 h-16 md:w-16 md:h-20 border-2 transition-all duration-300 overflow-hidden
+                                   ${i === index ? 'border-[#F5F0E8] scale-105' : 'border-white/10 opacity-40 hover:opacity-100'}`}
+                    >
+                        <Image src={src} alt="" fill className="object-cover" sizes="64px" />
+                    </button>
+                ))}
+            </footer>
+        </div>
+    );
+};
+
 /** Cabecera tipo masthead de revista */
 const Masthead = memo(function Masthead() {
     const { t } = useLanguage();
     return (
-        <header className="services-masthead">
+        <header className="services-masthead mb-20 md:mb-32">
             <div className="masthead-meta">
                 <span className="masthead-label">{t.services.mastheadLabel1}</span>
                 <span className="masthead-label">{t.services.mastheadLabel2}</span>
@@ -59,7 +133,7 @@ const Masthead = memo(function Masthead() {
 
 /** Spread individual por editorial */
 const EditorialSpread = memo(function EditorialSpread({
-    issue, tag, title, copy, mainImg, thumbs, pull, flip,
+    issue, tag, title, copy, mainImg, thumbs, pull, flip, onOpen
 }: {
     issue: string;
     tag: string;
@@ -69,41 +143,47 @@ const EditorialSpread = memo(function EditorialSpread({
     thumbs: readonly string[];
     pull: string;
     flip: boolean;
+    onOpen: (allPhotos: string[], name: string) => void;
 }) {
     const lines = title.split("\n");
     const pullLines = pull.split("\n");
+    const allPhotos = [mainImg, ...thumbs];
 
     return (
         <article
-            className={`spread ${flip ? "spread--flip" : ""}`}
+            className={`spread ${flip ? "spread--flip" : ""} mb-32 md:mb-56 last:mb-0`}
             aria-label={`Editorial ${tag}: ${title.replace("\n", " ")}`}
         >
-            <div className="spread-visual">
+            <div className="spread-visual group/gallery cursor-pointer" onClick={() => onOpen(allPhotos, title)}>
                 <span className="spread-issue font-gothic" aria-hidden="true">
                     {issue}
                 </span>
 
-                <div className="spread-main-photo relative aspect-[4/5]">
+                <div className="spread-main-photo relative aspect-[4/5] overflow-hidden">
                     <Image
                         src={mainImg}
                         alt={title.replace("\n", " ")}
                         fill
-                        className="spread-main-img object-cover"
+                        className="spread-main-img object-cover group-hover/gallery:scale-105 transition-transform duration-700"
                         sizes="(max-width: 1024px) 100vw, 55vw"
                     />
                     <div className="spread-tag-badge" aria-hidden="true">
                         <span className="font-mono-urban">{tag}</span>
                     </div>
+                    {/* Hover indicator overlay */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/gallery:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-white text-xs tracking-widest bg-black/40 px-4 py-2 uppercase font-mono-urban">Explore Story</span>
+                    </div>
                 </div>
 
-                <div className="spread-strips flex gap-2 mt-2 h-24" aria-hidden="true">
+                <div className="spread-strips flex gap-2 mt-4 h-24 md:h-32" aria-hidden="true">
                     {thumbs.slice(0, 3).map((src, i) => (
                         <div key={i} className="spread-strip relative flex-1 overflow-hidden">
                             <Image
                                 src={src}
                                 alt=""
                                 fill
-                                className="spread-strip-img object-cover"
+                                className="spread-strip-img object-cover group-hover/gallery:scale-110 transition-transform duration-700 delay-75"
                                 sizes="15vw"
                             />
                         </div>
@@ -114,7 +194,11 @@ const EditorialSpread = memo(function EditorialSpread({
             <div className="spread-text">
                 <h3 className="spread-title font-gothic" aria-label={title.replace("\n", " ")}>
                     {lines.map((line, i) => (
-                        <span key={i} className="spread-title-line" aria-hidden="true">
+                        <span
+                            key={i}
+                            className={`spread-title-line ${i > 0 ? 'text-[#8A8A8A] opacity-60' : ''}`}
+                            aria-hidden="true"
+                        >
                             {line}
                         </span>
                     ))}
@@ -133,10 +217,13 @@ const EditorialSpread = memo(function EditorialSpread({
                 </blockquote>
 
                 <button
-                    className="btn-urban spread-cta"
+                    className="btn-urban spread-cta group"
                     aria-label={`Ver serie completa de ${tag}`}
+                    onClick={() => onOpen(allPhotos, title)}
                 >
-                    VER SERIE →
+                    <span className="relative z-10 flex items-center gap-3">
+                        {tag === "RURAL" || tag === "SALVAJE" ? "VER SERIE →" : "EXPLORAR →"}
+                    </span>
                 </button>
             </div>
         </article>
@@ -188,11 +275,24 @@ const ComboBlock = memo(function ComboBlock() {
 export default function Services() {
     const { t } = useLanguage();
     const revealRef = useReveal();
+    const [viewer, setViewer] = useState<{ open: boolean, images: string[], title: string }>({
+        open: false,
+        images: [],
+        title: ""
+    });
+
+    const openGallery = useCallback((images: string[], title: string) => {
+        setViewer({ open: true, images, title });
+    }, []);
+
+    const closeGallery = useCallback(() => {
+        setViewer(v => ({ ...v, open: false }));
+    }, []);
 
     return (
         <section
             id="servicios"
-            className="services-section bg-black py-20"
+            className="services-section bg-black py-24 md:py-32"
             aria-label="Editoriales — La Carta"
         >
             <div ref={revealRef} className="section-container">
@@ -205,12 +305,22 @@ export default function Services() {
                             {...ed}
                             mainImg={EDITORIAL_ASSETS[idx]?.mainImg || "/flow_kids.avif"}
                             thumbs={EDITORIAL_ASSETS[idx]?.thumbs || []}
+                            onOpen={openGallery}
                         />
                     ))}
                 </div>
 
                 <ComboBlock />
             </div>
+
+            {/* Galería / Lightbox */}
+            {viewer.open && (
+                <Lightbox
+                    images={viewer.images}
+                    title={viewer.title}
+                    onClose={closeGallery}
+                />
+            )}
         </section>
     );
 }

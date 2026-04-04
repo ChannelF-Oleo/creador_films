@@ -82,7 +82,7 @@ export const translations = {
         },
         planes: {
             eyebrow: "Inversión en tu imagen",
-            title: "Planes & Precios",
+            title: "Planes",
             desc: "Sesiones diseñadas para sacar tu mejor versión con un enfoque editorial y urbano.",
             currency: "RD$",
             decimals: ".00",
