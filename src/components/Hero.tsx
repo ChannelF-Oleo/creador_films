@@ -65,14 +65,12 @@ const HeroActions = memo(function HeroActions() {
                 Ver Portafolio
             </Link>
 
-            <a href={WA_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+            <Link href="/#contacto"
                 className="btn-urban-outline"
-                aria-label="Agendar sesión por WhatsApp"
+                aria-label="Ir a la sección de contacto para reservar"
             >
                 Agendar Sesión
-            </a>
+            </Link>
         </div >
     );
 });

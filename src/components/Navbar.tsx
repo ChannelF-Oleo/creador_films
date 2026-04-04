@@ -9,11 +9,11 @@ const WA_TEXT = encodeURIComponent("Klk mio, me gustaria agendar una sesion de f
 const WA_LINK = `https://wa.me/18292971687?text=${WA_TEXT}`;
 
 const NAV_LINKS = [
-    { href: "/#inicio", label: "Inicio" },
+    { href: "/#hero", label: "Inicio" },
     { href: "/#chef", label: "Chef" },
     { href: "/#servicios", label: "Servicios" },
+    { href: "/#planes", label: "Planes" },
     { href: "/portafolio", label: "Portafolio" },
-    { href: "/planes", label: "Planes" },
 ] as const;
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
@@ -93,14 +93,13 @@ export default function Navbar() {
                             ))}
                         </ul>
 
-                        <a href={WA_LINK}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link 
+                            href="/#contacto"
                             className="navbar-cta"
-                            aria-label="Reservar sesión por WhatsApp"
+                            aria-label="Ir a la sección de contacto"
                         >
                             Reserva
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Hamburger */}
@@ -126,7 +125,7 @@ export default function Navbar() {
                 aria-label="Menú de navegación"
             >
                 <ul className="mobile-menu-links" role="list">
-                    {[...NAV_LINKS, { href: WA_LINK, label: "Reserva" } as const].map(
+                    {[...NAV_LINKS, { href: "/#contacto", label: "Reserva" } as const].map(
                         ({ href, label }, i) => (
                             <li
                                 key={href}
