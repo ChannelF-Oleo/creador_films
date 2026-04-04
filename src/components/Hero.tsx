@@ -17,7 +17,7 @@ const HeroBackground = memo(function HeroBackground() {
     return (
         <div className="hero-bg-container" aria-hidden="true">
             <Image
-                src="/Hero.jpeg"
+                src="/Hero.avif"
                 alt=""                      // decorativo: aria-label en <section> describe el contexto
                 fill
                 priority
@@ -39,6 +39,7 @@ const HeroEyebrow = memo(function HeroEyebrow() {
         </div>
     );
 });
+
 
 const HeroServices = memo(function HeroServices() {
     return (

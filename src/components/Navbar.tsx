@@ -9,10 +9,11 @@ const WA_TEXT = encodeURIComponent("Klk mio, me gustaria agendar una sesion de f
 const WA_LINK = `https://wa.me/18292971687?text=${WA_TEXT}`;
 
 const NAV_LINKS = [
-    { href: "#inicio", label: "Inicio" },
-    { href: "#chef", label: "Chef" },
-    { href: "#servicios", label: "Servicios" },
+    { href: "/#inicio", label: "Inicio" },
+    { href: "/#chef", label: "Chef" },
+    { href: "/#servicios", label: "Servicios" },
     { href: "/portafolio", label: "Portafolio" },
+    { href: "/planes", label: "Planes" },
 ] as const;
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/Hero.jpeg",
+        url: "/Hero.avif",
         width: 1200,
         height: 630,
         alt: "Creador Films - Estética del Asfalto",
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CREADOR FILMS — Fotografía Urbana Editorial",
     description: "Fotografía editorial, urbana, moda y cultura.",
-    images: ["/Hero.jpeg"],
+    images: ["/Hero.avif"],
   },
   robots: {
     index: true,
@@ -66,11 +67,29 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bodoni+Moda:ital,opsz,wght@0,6..96,300;0,6..96,400;0,6..96,700;1,6..96,300;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Rubik+Dirt&display=swap"
+          href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bodoni+Moda:ital,opsz,wght@0,6..96,300;0,6..96,400;0,6..96,700;1,6..96,300;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Rubik+Dirt&family=Yeseva+One&family=Sedgwick+Ave+Display&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-773P2LB2X7`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-773P2LB2X7');
+            `,
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

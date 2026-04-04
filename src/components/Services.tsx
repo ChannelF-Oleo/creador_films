@@ -7,6 +7,15 @@ import useReveal from "@/hooks/useReveal";
 // ── Constantes ────────────────────────────────────────────────────────────────
 const WA_COMBO = "https://wa.me/18292971687?text=Quiero%20reservar%20El%20Combo%20Cabrón";
 
+const SERVICES_LIST = [
+    "Fotografía para Bodas",
+    "Fotografía BTS (Behind The Scenes)",
+    "Fotografía de Eventos",
+    "Fotografía de Moda",
+    "Fotografía de Conciertos",
+    "Fotografía de Cumpleaños"
+];
+
 const EDITORIALES = [
     {
         issue: "01",
@@ -15,8 +24,8 @@ const EDITORIALES = [
         copy: "El flow no se enseña. Se lleva en la sangre, se afina en la calle, se revela en la mirada antes de aprender a caminar. Esta serie documenta a la nueva generación del asfalto — los que ya nacieron sabiendo que la calle es suya.",
         sub: "Porque el estilo más puro es el que todavía no conoce las reglas.",
         pull: ["«La calle", "no miente»"],
-        mainImg: "/flow_kids.jpg",
-        thumbs: ["/flow_kids2.jpg", "/flow_kids3.jpg", "/flow_kid4.jpg"],
+        mainImg: "/flow_kids.avif",
+        thumbs: ["/flow_kids2.avif", "/flow_kids3.avif", "/flow_kid4.avif"],
         flip: false,
     },
     {
@@ -26,8 +35,8 @@ const EDITORIALES = [
         copy: "Entre humo, concreto y miradas que no negocian lo que son. Esta es la sintaxis del bajo mundo: cruda, honesta, con orgullo.",
         sub: "Cada disparo es evidencia. Cada esquina, territorio.",
         pull: ["«Cada esquina", "es un estudio»"],
-        mainImg: "/street2.jpeg",
-        thumbs: ["/street.jpg", "/street_studio.jpeg", "/cultura.jpeg", "/culture2.jpeg", "/street_studio2.jpeg"],
+        mainImg: "/street2.avif",
+        thumbs: ["/street.avif", "/street_studio.avif", "/cultura.avif", "/culture2.avif", "/street_studio2.avif"],
         flip: true,
     },
     {
@@ -37,8 +46,8 @@ const EDITORIALES = [
         copy: "La calle deja de ser fondo y se convierte en discurso. Entre concreto, tránsito y ruido, la prenda encuentra otra forma de decir quién es. Aquí la moda no adorna: se enfrenta, se adapta y se afirma.",
         sub: "Donde la identidad se porta con orgullo.",
         pull: ["«Pasarela", "disruptiva»"],
-        mainImg: "/moda2.jpeg",
-        thumbs: ["/moda.jpeg", "/moda3.jpeg", "/moda4.jpeg", "/moda5.jpeg"],
+        mainImg: "/moda2.avif",
+        thumbs: ["/moda.avif", "/moda3.avif", "/moda4.avif", "/moda5.avif"],
         flip: false,
     },
     {
@@ -48,8 +57,8 @@ const EDITORIALES = [
         copy: "Donde el asfalto se rinde y empieza la tierra, la esencia respira diferente. Lejos del ruido, la belleza más brutal es la que no pidió permiso. Esta serie es un viaje al borde — al lugar donde somos parte de algo que nos trasciende.",
         sub: "La naturaleza es arte por si misma.",
         pull: ["«Cimarronaje", "libertad»"],
-        mainImg: "/rural4.jpeg",
-        thumbs: ["/rural2.jpeg", "/rural3.jpeg", "/rural.jpeg"],
+        mainImg: "/rural4.avif",
+        thumbs: ["/rural2.avif", "/rural3.avif", "/rural.avif"],
         flip: false,
     },
 ] as const;
@@ -64,9 +73,18 @@ const Masthead = memo(function Masthead() {
                 <span className="masthead-label">VOL. I</span>
             </div>
 
-            <div className="masthead-title-wrapper">
-                <span className="masthead-ghost font-gothic" aria-hidden="true">La</span>
-                <h3 className="masthead-title font-gothic">Muestra</h3>
+            <div className="masthead-title-wrapper ml-4">
+                <span className="masthead-ghost font-['Sedgwick_Ave_Display'] tracking-wider transform -rotate-2" aria-hidden="true" style={{ opacity: 0.5 }}>La</span>
+                <h3 
+                    className="masthead-title font-['Sedgwick_Ave_Display'] tracking-wider transform -rotate-2"
+                    style={{ 
+                        color: "#F5F0E8", 
+                        WebkitTextStroke: "2px #D49B72",
+                        textShadow: "6px 6px 0px rgba(212, 155, 114, 0.5)" 
+                    }}
+                >
+                    Muestra
+                </h3>
             </div>
 
             <div className="masthead-footer">
@@ -199,9 +217,21 @@ const EditorialSpread = memo(function EditorialSpread({
                         {issue} / {tag}
                     </span>
 
-                    <h3 className="spread-title font-gothic" aria-label={title.join(" ")}>
+                    <h3 
+                        className="spread-title font-['Sedgwick_Ave_Display'] transform -rotate-2 mb-6" 
+                        aria-label={title.join(" ")}
+                    >
                         {title.map((line, i) => (
-                            <span key={i} className={`spread-title-line ${i === 1 ? "spread-title-line--indent" : ""}`} aria-hidden="true">
+                            <span 
+                                key={i} 
+                                className={`spread-title-line tracking-wider ${i === 1 ? "md:pl-16 pl-6 mt-[-0.2em]" : ""}`} 
+                                aria-hidden="true"
+                                style={{ 
+                                    color: "#F5F0E8", 
+                                    WebkitTextStroke: "2px #D49B72",
+                                    textShadow: "6px 6px 0px rgba(212, 155, 114, 0.5)" 
+                                }}
+                            >
                                 {line}
                             </span>
                         ))}
@@ -213,11 +243,17 @@ const EditorialSpread = memo(function EditorialSpread({
                     <p className="spread-sub font-mono-urban">{sub}</p>
 
                     <blockquote
-                        className="spread-pull font-gothic"
+                        className="spread-pull font-['Sedgwick_Ave_Display'] tracking-wider"
                         aria-label={pull.join(" ")}
+                        style={{ 
+                            opacity: 0.45,
+                            color: "#E52A2A", 
+                            WebkitTextStroke: "1px #8a1313",
+                            textShadow: "2px 2px 0px rgba(138, 19, 19, 0.4)"
+                        }}
                     >
                         {pull.map((line, i) => (
-                            <span key={i} className="spread-pull-line" aria-hidden="true">{line}</span>
+                            <span key={i} className={`spread-pull-line ${i === 1 ? "pl-4 md:pl-8" : ""}`} aria-hidden="true">{line}</span>
                         ))}
                     </blockquote>
 
@@ -244,9 +280,17 @@ const ComboBlock = memo(function ComboBlock() {
         <aside className="combo-block" aria-label="El Combo Cabrón">
             <div className="combo-label-wrap">
                 <span className="combo-badge font-mono-urban">Exclusive Collab</span>
-                <h4 className="combo-title font-gothic">
+                <h4 
+                    className="combo-title font-['Sedgwick_Ave_Display'] tracking-wider transform -rotate-2 mt-4 px-2"
+                    style={{ 
+                        color: "#F5F0E8", 
+                        WebkitTextStroke: "1px #D49B72",
+                        textShadow: "3px 3px 0px rgba(212, 155, 114, 0.5)",
+                        lineHeight: 0.95
+                    }}
+                >
                     El Combo<br />
-                    <span className="combo-title-accent">Cabrón</span>
+                    <span className="inline-block mt-2 ml-4">Cabrón</span>
                 </h4>
             </div>
 
@@ -288,6 +332,24 @@ export default function Services() {
             aria-label="Editoriales — La Carta"
         >
             <div ref={revealRef} className="section-container">
+                {/* Especialidades */}
+                <div className="mb-20 md:mb-32 max-w-4xl">
+                    <div className="flex items-center gap-4 mb-8">
+                        <span className="font-mono-urban text-[#8A8A8A]">— Especialidades</span>
+                        <div className="h-[1px] flex-1 bg-[#222]"></div>
+                    </div>
+                    <ul className="flex flex-wrap gap-3 md:gap-4">
+                        {SERVICES_LIST.map((service, idx) => (
+                            <li 
+                                key={idx} 
+                                className="border border-[#222] bg-[#0a0a0a] text-[#F5F0E8] px-5 py-3 md:px-6 md:py-3.5 text-sm md:text-base font-serif italic tracking-wide rounded-full hover:bg-[#F5F0E8] hover:text-black hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(245,240,232,0.15)] transition-all duration-300 cursor-default"
+                            >
+                                {service}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
                 <Masthead />
                 <div className="spreads-stack">
                     {EDITORIALES.map((ed) => (
