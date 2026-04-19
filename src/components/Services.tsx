@@ -30,7 +30,7 @@ const EDITORIAL_ASSETS = [
     {
         issue: "05",
         mainImg: "/studio2.avif",
-        thumbs: ["/studio.avif", "/studio3.avif", "/studio4.avif", "/studio5.avif",],
+        thumbs: ["/studio.avif", "/Studio3.avif", "/studio4.avif", "/studio5.avif",],
     },
     {
         issue: "06",
