@@ -13,7 +13,7 @@ export default function Planes() {
             price: t.planes.pA.price,
             features: t.planes.pA.features,
             ctaText: `${t.planes.cta} ${t.planes.pA.name}`,
-            waLink: `https://wa.me/18292971687?text=${encodeURIComponent(lang === 'es' ? "Klk mio, me gustaria agendar el Plan A" : "Hi, I'd like to book Plan A")}`
+            waLink: `https://wa.me/18292971687?text=${encodeURIComponent(lang === 'es' ? "Hola. Edwin!, me gustaria agendar el Plan A" : "Hi, I'd like to book Plan A")}`
         },
         {
             name: t.planes.pB.name,
@@ -21,7 +21,7 @@ export default function Planes() {
             popular: true,
             features: t.planes.pB.features,
             ctaText: `${t.planes.cta} ${t.planes.pB.name}`,
-            waLink: `https://wa.me/18292971687?text=${encodeURIComponent(lang === 'es' ? "Klk mio, me gustaria agendar el Plan B" : "Hi, I'd like to book Plan B")}`
+            waLink: `https://wa.me/18292971687?text=${encodeURIComponent(lang === 'es' ? "Hola. Edwin!, me gustaria agendar el Plan B" : "Hi, I'd like to book Plan B")}`
         }
     ];
 
@@ -88,6 +88,39 @@ export default function Planes() {
                             </a>
                         </div>
                     ))}
+                </div>
+
+                {/* Framing / Impresión */}
+                <div className="max-w-4xl mx-auto mb-16 rounded-xl border border-[#F5F0E8]/20 bg-[#0f0f12] overflow-hidden">
+                    <div className="flex flex-col md:flex-row items-stretch">
+                        {/* Icono decorativo */}
+                        <div className="flex items-center justify-center bg-[#F5F0E8]/5 px-10 py-8 md:py-0 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 text-[#F5F0E8]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                                <rect x="3" y="3" width="18" height="18" rx="1" />
+                                <rect x="7" y="7" width="10" height="10" rx="0.5" />
+                            </svg>
+                        </div>
+                        {/* Contenido */}
+                        <div className="flex-1 p-8">
+                            <p className="text-[0.65rem] tracking-[0.3em] uppercase text-[#8A8A8A] mb-3">
+                                — Add-on
+                            </p>
+                            <h3 className="font-gothic text-xl md:text-2xl text-[#F5F0E8] mb-5 leading-tight">
+                                {t.planes.framing.title}
+                            </h3>
+                            <ul className="space-y-2 mb-5">
+                                {t.planes.framing.options.map((opt, i) => (
+                                    <li key={i} className="flex items-center gap-2 text-sm text-[#8A8A8A]">
+                                        <span className="text-[#F5F0E8]/50">✔</span>
+                                        {opt}
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="text-xs text-[#8A8A8A]/60 italic">
+                                {t.planes.framing.alert}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Notes */}

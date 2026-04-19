@@ -6,7 +6,7 @@ import useReveal from "@/hooks/useReveal";
 import { useLanguage } from "@/context/LanguageContext";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
-const WA_TEXT = encodeURIComponent("Klk mio, me gustaria agendar una sesion de fotos");
+const WA_TEXT = encodeURIComponent("Hola. Edwin!, me gustaria agendar una sesion de fotos");
 const WA_LINK = `https://wa.me/18292971687?text=${WA_TEXT}`;
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────

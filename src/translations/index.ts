@@ -69,6 +69,22 @@ export const translations = {
                     copy: "Donde el asfalto se rinde y empieza la tierra, la esencia respira diferente. Lejos del ruido, la belleza más brutal es la que no pidió permiso. Esta serie es un viaje al borde — al lugar donde somos parte de algo que nos trasciende.",
                     pull: "«Cimarronaje,\nlibertad»",
                     flip: true,
+                },
+                {
+                    issue: "05",
+                    tag: "STUDIO",
+                    title: "Studio",
+                    copy: "Bajo el flash, la verdad no tiene donde esconderse. Son cuatro paredes y una intención clara: capturar la esencia antes de que parpadee. Aquí mandamos nosotros, la luz y el lente.",
+                    pull: "«Sin ruido,\nsolo poder»",
+                    flip: false,
+                },
+                {
+                    issue: "06",
+                    tag: "BTS",
+                    title: "BTS - Detrás de cámaras",
+                    copy: "El esqueleto del concepto. Entre trípodes y voltajes se articula la visión que otros solo ven terminada. Es la técnica al servicio de la intuición; el desorden necesario antes de la captura final.",
+                    pull: "«La estética\nse construye»",
+                    flip: true,
                 }
             ],
             combo: {
@@ -89,17 +105,47 @@ export const translations = {
             pA: {
                 name: "Plan A",
                 price: "7,000",
-                features: ["10 fotos digitales", "Retoque profesional", "1 hora de sesión", "1 vestuario", "Locación Distrito o Estudio*", "Hora extra RD$1,000"]
+                features: [
+                    "10 fotos digitales",
+                    "Retoque profesional",
+                    "1 hora de sesión",
+                    "1 vestuario",
+                    "Locación Distrito o Estudio*",
+                    "Hora extra RD$1,000"
+                ]
             },
             pB: {
                 name: "Plan B",
                 price: "13,000",
-                features: ["22 fotos digitales", "Retoque profesional", "2 horas de sesión", "2 cambios", "Locación Distrito o Estudio*", "Hora extra RD$1,300"]
+                features: [
+                    "22 fotos digitales",
+                    "Retoque profesional",
+                    "2 horas de sesión",
+                    "2 cambios",
+                    "Locación Distrito o Estudio*",
+                    "Hora extra RD$1,300"
+                ]
+            },
+            // Nueva sección para destacar el servicio de enmarcado
+            framing: {
+                title: "arte Impreso",
+                options: [
+                    "Impresión + enmarcado disponible",
+                    "Diferentes estilos de marcos",
+                    "Acabado listo para exhibir"
+                ],
+                alert: "El enmarcado tiene un costo adicional"
             },
             cta: "Reservar",
             popular: "Más Popular",
             notesTitle: "Notas Importantes",
-            notes: ["Depósito del 50% para agendar", "Confirmar fecha antes de depositar", "*Alquiler de estudio no incluido", "Ajustes según visión creativa"]
+            notes: [
+                "Depósito del 50% para agendar",
+                "Confirmar fecha antes de depositar",
+                "*Alquiler de estudio no incluido",
+                "Ajustes según visión creativa",
+                "⚠️ El enmarcado tiene un costo adicional" // Agregado a las notas generales por seguridad
+            ]
         },
         contact: {
             eyebrow: "TRABAJA CON NOSOTROS",
@@ -189,6 +235,22 @@ export const translations = {
                     copy: "Where the asphalt surrenders and the earth begins, essence breathes differently. Away from the noise, the most brutal beauty is the one that didn't ask for permission. This series is a journey to the edge — to the place where we are part of something that transcends us.",
                     pull: "«Marronage,\nfreedom»",
                     flip: true,
+                },
+                {
+                    issue: "05",
+                    tag: "STUDIO",
+                    title: "Dominion",
+                    copy: "Under the flash, the truth has nowhere to hide. Four walls and a clear intent: to capture the essence before it blinks. Here, we command the light and the lens.",
+                    pull: "“No noise,\njust power”",
+                    flip: false,
+                },
+                {
+                    issue: "06",
+                    tag: "BTS",
+                    title: "Mechanics",
+                    copy: "The skeleton of the concept. Amidst tripods and voltages, the vision that others only see finished is articulated. It is technique at the service of intuition; the necessary chaos before the final capture.",
+                    pull: "“Aesthetics\nare built”",
+                    flip: true,
                 }
             ],
             combo: {
@@ -201,25 +263,55 @@ export const translations = {
             }
         },
         planes: {
-            eyebrow: "Invest in your image",
+            eyebrow: "Investing in your image",
             title: "Plans",
-            desc: "Sessions designed to bring out your best version with an editorial and urban focus.",
-            currency: "USD $",
+            desc: "Sessions designed to showcase your best version with an editorial and urban focus.",
+            currency: "RD$",
             decimals: ".00",
             pA: {
                 name: "Plan A",
-                price: "155",
-                features: ["10 digital photos", "Professional retouching", "1 hour session", "1 outfit", "Studio or Local location*", "Extra hour USD $20"]
+                price: "7,000",
+                features: [
+                    "10 digital photos",
+                    "Professional retouching",
+                    "1-hour session",
+                    "1 outfit",
+                    "Location: District or Studio*",
+                    "Extra hour: RD$1,000"
+                ]
             },
             pB: {
                 name: "Plan B",
-                price: "290",
-                features: ["22 digital photos", "Professional retouching", "2 hour session", "2 changes", "Studio or Local location*", "Extra hour USD $30"]
+                price: "13,000",
+                features: [
+                    "22 digital photos",
+                    "Professional retouching",
+                    "2-hour session",
+                    "2 outfit changes",
+                    "Location: District or Studio*",
+                    "Extra hour: RD$1,300"
+                ]
+            },
+            // New premium printing & framing section
+            framing: {
+                title: "Turn your photos into pieces that truly stand out",
+                options: [
+                    "Printing + framing available",
+                    "Multiple frame styles",
+                    "Ready-to-display finish"
+                ],
+                alert: "⚠️ Framing has an additional cost."
             },
             cta: "Book Now",
             popular: "Most Popular",
             notesTitle: "Important Notes",
-            notes: ["50% deposit required to book", "Confirm availability before deposit", "*Studio rental not included", "Adjustments per creative vision"]
+            notes: [
+                "50% deposit required to book",
+                "Confirm date availability before depositing",
+                "*Studio rental not included",
+                "Adjustments based on creative vision",
+                "⚠️ Framing services are quoted separately"
+            ]
         },
         contact: {
             eyebrow: "WORK WITH US",

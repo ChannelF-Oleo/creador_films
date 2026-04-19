@@ -27,6 +27,16 @@ const EDITORIAL_ASSETS = [
         mainImg: "/rural4.avif",
         thumbs: ["/rural.avif", "/rural2.avif", "/rural3.avif"],
     },
+    {
+        issue: "05",
+        mainImg: "/studio2.avif",
+        thumbs: ["/studio.avif", "/studio3.avif", "/studio4.avif", "/studio5.avif",],
+    },
+    {
+        issue: "06",
+        mainImg: "/bts.avif",
+        thumbs: ["/bts2.avif", "/bts3.avif", "/bts4.avif", "/bts5.avif",],
+    },
 ] as const;
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────

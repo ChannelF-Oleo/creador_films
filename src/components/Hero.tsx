@@ -6,7 +6,7 @@ import { memo } from "react";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 const WA_TEXT = encodeURIComponent(
-    "Klk mio, me gustaria agendar una sesion de fotos"
+    "Hola. Edwin!, me gustaria agendar una sesion de fotos"
 );
 const WA_LINK = `https://wa.me/18292971687?text=${WA_TEXT}`;
 
