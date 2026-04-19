@@ -65,7 +65,7 @@ export const translations = {
                 {
                     issue: "04",
                     tag: "RURAL",
-                    title: "Salvaje",
+                    title: "salvaje",
                     copy: "Donde el asfalto se rinde y empieza la tierra, la esencia respira diferente. Lejos del ruido, la belleza más brutal es la que no pidió permiso. Esta serie es un viaje al borde — al lugar donde somos parte de algo que nos trasciende.",
                     pull: "«Cimarronaje,\nlibertad»",
                     flip: true,
@@ -73,7 +73,7 @@ export const translations = {
                 {
                     issue: "05",
                     tag: "STUDIO",
-                    title: "Studio",
+                    title: "studio",
                     copy: "Bajo el flash, la verdad no tiene donde esconderse. Son cuatro paredes y una intención clara: capturar la esencia antes de que parpadee. Aquí mandamos nosotros, la luz y el lente.",
                     pull: "«Sin ruido,\nsolo poder»",
                     flip: false,
