@@ -39,7 +39,7 @@ const EDITORIAL_ASSETS = [
     },
 ] as const;
 
-// ── Sub-componentes ───────────────────────────────────────────────────────────
+// ── SUBYACENTES-componentes ───────────────────────────────────────────────────────────
 
 /** Lightbox minimalista tipo editorial */
 const Lightbox = ({ images, title, onClose }: { images: string[], title: string, onClose: () => void }) => {
