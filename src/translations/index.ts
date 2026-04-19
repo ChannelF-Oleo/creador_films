@@ -81,7 +81,7 @@ export const translations = {
                 {
                     issue: "06",
                     tag: "BTS",
-                    title: "BTS - Detrás de cámaras",
+                    title: "bts - Detrás de cámaras",
                     copy: "El esqueleto del concepto. Entre trípodes y voltajes se articula la visión que otros solo ven terminada. Es la técnica al servicio de la intuición; el desorden necesario antes de la captura final.",
                     pull: "«La estética\nse construye»",
                     flip: true,
