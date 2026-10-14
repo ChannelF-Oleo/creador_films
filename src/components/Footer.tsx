@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
-export default function Footer() {
+export default function Footer({ year }: { year: number }) {
     const { t } = useLanguage();
 
     return (
@@ -43,7 +43,7 @@ export default function Footer() {
                 {/* 3. Credits */}
                 <div className="flex flex-col items-center md:items-end gap-3 text-[0.65rem] sm:text-[0.7rem] tracking-[0.1em] text-[#8A8A8A] md:text-right">
                     <p className="max-w-[200px] md:max-w-none">
-                        © {new Date().getFullYear()} CreadorFilms<br />
+                        © {year} CreadorFilms<br />
                         {t.footer.rights}
                     </p>
                     <div className="w-8 h-px bg-[#8A8A8A]/30 my-2" aria-hidden="true" />

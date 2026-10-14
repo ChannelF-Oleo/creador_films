@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { auth, db, storage } from "@/lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
+import Link from "next/link";
+import { collection, getDocs } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import imageCompression from "browser-image-compression";
+import { createCategory, createPhoto, moveCategory } from "@/app/actions/admin";
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   // states for UI
@@ -25,7 +27,8 @@ export default function AdminDashboard() {
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoCategory, setPhotoCategory] = useState("");
-  const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+  const [photoAlt, setPhotoAlt] = useState("");
+  const [categories, setCategories] = useState<{ id: string, name: string, order: number }[]>([]);
   const [photoLoading, setPhotoLoading] = useState(false);
   const [photoProgress, setPhotoProgress] = useState(0);
   const [photoSuccess, setPhotoSuccess] = useState("");
@@ -53,11 +56,12 @@ export default function AdminDashboard() {
   const fetchCategories = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "categories"));
-      const cats: {id: string, name: string}[] = [];
+      const cats: { id: string, name: string, order: number }[] = [];
       querySnapshot.forEach((doc) => {
-        cats.push({ id: doc.id, name: doc.data().name });
+        cats.push({ id: doc.id, name: doc.data().name, order: doc.data().order ?? Number.MAX_SAFE_INTEGER });
       });
-      setCategories(cats);
+      // Mismo orden que los filtros del portafolio
+      setCategories(cats.sort((a, b) => a.order - b.order || a.name.localeCompare(b.name)));
     } catch (error) {
       console.error("Error fetching categories: ", error);
     }
@@ -65,15 +69,17 @@ export default function AdminDashboard() {
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!categoryName.trim()) return;
+    if (!categoryName.trim() || !user) return;
 
     setCategoryLoading(true);
     setCategorySuccess("");
     try {
-      await addDoc(collection(db, "categories"), {
-        name: categoryName,
-        createdAt: serverTimestamp(),
-      });
+      // El servidor quita espacios sobrantes y rechaza nombres repetidos
+      const result = await createCategory(await user.getIdToken(), categoryName);
+      if (!result.ok) {
+        setCategorySuccess(`Error: ${result.error}`);
+        return;
+      }
       setCategorySuccess("Categoría creada exitosamente.");
       setCategoryName("");
       fetchCategories(); // Reload categories
@@ -86,9 +92,21 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleMoveCategory = async (categoryId: string, direction: -1 | 1) => {
+    if (!user) return;
+    setCategoryLoading(true);
+    try {
+      const result = await moveCategory(await user.getIdToken(), categoryId, direction);
+      if (!result.ok) setCategorySuccess(`Error: ${result.error}`);
+      await fetchCategories();
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
+
   const handleUploadPhoto = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!photoFile || !photoCategory) return;
+    if (!photoFile || !photoCategory || !user) return;
 
     setPhotoLoading(true);
     setPhotoProgress(0);
@@ -97,15 +115,22 @@ export default function AdminDashboard() {
     try {
       // 1. Comprimir imagen
       const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 3,
+        maxWidthOrHeight: 2400,
+        initialQuality: 0.85,
         useWebWorker: true,
       };
-      
+
       const compressedFile = await imageCompression(photoFile, options);
 
+      // Medidas reales para que el portafolio muestre la foto sin recortes
+      const bitmap = await createImageBitmap(compressedFile);
+      const { width, height } = bitmap;
+      bitmap.close();
+
       // 2. Subir a Firebase Storage
-      const storageRef = ref(storage, `portfolio/${Date.now()}_${compressedFile.name}`);
+      const storagePath = `portfolio/${Date.now()}_${compressedFile.name}`;
+      const storageRef = ref(storage, storagePath);
       const uploadTask = uploadBytesResumable(storageRef, compressedFile);
 
       uploadTask.on(
@@ -120,21 +145,25 @@ export default function AdminDashboard() {
           setPhotoLoading(false);
         },
         async () => {
-          // 3. Guardar URL en Firestore
+          // 3. Guardar en Firestore desde el servidor, que además refresca el portafolio
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          const catName = categories.find(c => c.id === photoCategory)?.name || 'Categoría';
-          await addDoc(collection(db, "photos"), {
-            cat: catName,
+          const result = await createPhoto(await user.getIdToken(), {
             src: downloadURL,
-            alt: `Fotografía de ${categories.find(c => c.id === photoCategory)?.name || 'Categoría'}`,
-            createdAt: serverTimestamp(),
-            tall: false,
-            wide: false
+            storagePath,
+            categoryId: photoCategory,
+            alt: photoAlt,
+            width,
+            height,
           });
+          if (!result.ok) {
+            setPhotoSuccess(`Error al guardar la foto: ${result.error}`);
+            setPhotoLoading(false);
+            return;
+          }
 
           setPhotoSuccess("Foto subida exitosamente.");
           setPhotoFile(null);
-          setPhotoCategory("");
+          setPhotoAlt("");
           setPhotoLoading(false);
           setPhotoProgress(0);
           
@@ -178,12 +207,20 @@ export default function AdminDashboard() {
             <h1 className="text-3xl sm:text-5xl font-bold uppercase tracking-tighter text-white">Dashboard</h1>
             <p className="text-gray-500 text-sm tracking-widest mt-2 uppercase">Gestor de Contenido / Creador Films</p>
           </div>
-          <button 
-            onClick={() => signOut(auth)}
-            className="text-xs uppercase tracking-widest text-gray-400 hover:text-white transition-colors duration-300"
-          >
-            Cerrar Sesión
-          </button>
+          <div className="flex flex-col items-end gap-3">
+            <Link
+              href="/portafolio"
+              className="text-xs uppercase tracking-widest text-white hover:text-gray-300 transition-colors duration-300"
+            >
+              Editar portafolio y landing →
+            </Link>
+            <button
+              onClick={() => signOut(auth)}
+              className="text-xs uppercase tracking-widest text-gray-400 hover:text-white transition-colors duration-300"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
         </header>
 
         {/* Tabs */}
@@ -262,6 +299,19 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                <div>
+                  <label htmlFor="photo-alt" className="block text-xs uppercase tracking-widest text-gray-500 mb-2">Texto alternativo</label>
+                  <input
+                    id="photo-alt"
+                    type="text"
+                    value={photoAlt}
+                    onChange={(e) => setPhotoAlt(e.target.value)}
+                    className="w-full bg-transparent border-b border-white/20 pb-2 text-white focus:outline-none focus:border-white transition-colors duration-300"
+                    placeholder="Ej. Retrato en blanco y negro en un callejón de Santo Domingo"
+                  />
+                  <p className="text-xs text-gray-600 mt-2">Describe la foto para Google y lectores de pantalla. Si lo dejas vacío se usa el nombre de la categoría.</p>
+                </div>
+
                 <div className="pt-4">
                   <button
                     type="submit"
@@ -318,12 +368,31 @@ export default function AdminDashboard() {
 
               {/* Listado de categorías */}
               <div className="mt-12">
-                <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-4">Categorías Existentes</h3>
+                <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-1">Categorías Existentes</h3>
+                <p className="text-xs text-gray-600 mb-4">Este es el orden de los filtros del portafolio.</p>
                 <ul className="space-y-2">
-                  {categories.map((cat) => (
+                  {categories.map((cat, i) => (
                     <li key={cat.id} className="flex items-center gap-3 text-sm text-gray-300 border-b border-white/5 pb-2">
                       <span className="w-1.5 h-1.5 bg-white/20 rounded-full"></span>
-                      {cat.name}
+                      <span className="flex-1">{cat.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveCategory(cat.id, -1)}
+                        disabled={categoryLoading || i === 0}
+                        className="px-2 text-gray-500 hover:text-white disabled:opacity-20"
+                        aria-label={`Subir ${cat.name}`}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveCategory(cat.id, 1)}
+                        disabled={categoryLoading || i === categories.length - 1}
+                        className="px-2 text-gray-500 hover:text-white disabled:opacity-20"
+                        aria-label={`Bajar ${cat.name}`}
+                      >
+                        ↓
+                      </button>
                     </li>
                   ))}
                   {categories.length === 0 && <p className="text-gray-600 text-sm italic">No hay categorías. Crea una.</p>}

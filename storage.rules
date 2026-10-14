@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'u47vBmzPBdPj7MjJCK3z109VbNq1';
+    }
+
+    match /portfolio/{allPaths=**} {
+      allow read: if true;
+      // Solo imágenes de hasta 15 MB; borrar también requiere ser admin
+      allow create, update: if isAdmin()
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 15 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

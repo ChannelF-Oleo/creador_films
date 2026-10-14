@@ -75,7 +75,7 @@ export default function Navbar() {
                             height={80}
                             className="navbar-logo-img"
                             style={{ width: "auto" }}
-                            priority
+                            loading="eager"
                         />
                     </Link>
 

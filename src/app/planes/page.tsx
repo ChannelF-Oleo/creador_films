@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Planes from "@/components/Planes";
 import Footer from "@/components/Footer";
+import { getCurrentYear } from "@/lib/year";
 
 export const metadata: Metadata = {
     title: "Planes y Precios",
@@ -24,14 +25,14 @@ export const metadata: Metadata = {
     },
 };
 
-export default function PlanesPage() {
+export default async function PlanesPage() {
     return (
         <main className="min-h-screen bg-black">
             <Navbar />
             <div className="pt-20">
                 <Planes />
             </div>
-            <Footer />
+            <Footer year={await getCurrentYear()} />
         </main>
     );
 }

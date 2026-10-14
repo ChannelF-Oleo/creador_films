@@ -4,20 +4,24 @@ import Image from "next/image";
 import { memo } from "react";
 import useReveal from "@/hooks/useReveal";
 import { useLanguage } from "@/context/LanguageContext";
+import type { LandingImage } from "@/lib/landing";
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 const WA_TEXT = encodeURIComponent("Hola. Edwin!, me gustaria agendar una sesion de fotos");
 const WA_LINK = `https://wa.me/18292971687?text=${WA_TEXT}`;
 
+// Foto de respaldo si Firestore no responde o no hay foto elegida
+const FALLBACK = { src: "/about.avif", alt: "Edwin — El Chef de las Fotos" };
+
 // ── Sub-componentes ───────────────────────────────────────────────────────────
-const ChefImage = memo(function ChefImage() {
+const ChefImage = memo(function ChefImage({ photo }: { photo: { src: string; alt: string } }) {
   return (
     <div className="chef-image-wrapper animate-fadeUp">
       <div className="chef-image-frame" aria-hidden="true" />
       <div className="chef-image-container">
         <Image
-          src="/about.avif"
-          alt="Edwin — El Chef de las Fotos"
+          src={photo.src}
+          alt={photo.alt}
           fill
           className="chef-photo grayscale contrast-110"
           sizes="(max-width: 768px) 100vw, 50vw"
@@ -51,16 +55,17 @@ const IngredienteRow = memo(function IngredienteRow({ label, value }: { label: s
   );
 });
 
-export default function About() {
-  const { t, lang } = useLanguage();
+export default function About({ photo }: { photo: LandingImage | null }) {
+  const { t } = useLanguage();
   const ref = useReveal();
+  const barsRef = useReveal();
 
   return (
     <section id="chef" className="chef-section" aria-label="Edwin — El Chef">
       <div className="grain-layer" aria-hidden="true" />
 
       <div ref={ref} className="section-container chef-grid">
-        <ChefImage />
+        <ChefImage photo={photo ?? FALLBACK} />
         
         <div className="chef-text-content">
           <p className="chef-eyebrow animate-fadeUp [animation-delay:200ms]">
@@ -80,7 +85,7 @@ export default function About() {
             </p>
           </div>
 
-          <div className="ingredients-container animate-fadeUp [animation-delay:800ms]">
+          <div ref={barsRef} className="ingredients-container animate-fadeUp [animation-delay:800ms]">
             <p className="ingredients-title">{t.about.ingredientsTitle}</p>
             <div className="ingredients-grid">
               {t.about.ingredients.map((ing) => (

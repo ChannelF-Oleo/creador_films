@@ -1,8 +1,8 @@
 import Gallery from "@/components/Gallery";
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
+import { getPortfolio } from "@/lib/portfolio";
+import { getLandingSettings } from "@/lib/landing";
 
 export const metadata: Metadata = {
     title: "Portafolio",
@@ -31,7 +31,9 @@ export const metadata: Metadata = {
     },
 };
 
-export default function PortafolioPage() {
+export default async function PortafolioPage() {
+    const [{ categories, photos }, landing] = await Promise.all([getPortfolio(), getLandingSettings()]);
+
     return (
         <main className="min-h-screen bg-black">
             <Navbar />
@@ -43,7 +45,7 @@ export default function PortafolioPage() {
                         Portafolio
                     </h1>
                 </div>
-                <Gallery />
+                <Gallery categories={categories} photos={photos} landing={landing} />
             </div>
         </main>
     );

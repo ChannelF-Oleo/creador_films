@@ -4,20 +4,19 @@ import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminLogin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  // Sin Firebase configurado no hay sesión que esperar
+  const [loading, setLoading] = useState(() => auth !== null);
   const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
+    if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         router.push("/admin/dashboard");
@@ -36,7 +35,7 @@ export default function AdminLogin() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // Let the onAuthStateChanged effect handle the redirect
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError("Credenciales incorrectas. Verifica tu correo y contraseña.");
       setSigningIn(false);
@@ -113,9 +112,9 @@ export default function AdminLogin() {
           </div>
           
           <div className="pt-2 text-center">
-            <a href="/" className="inline-block text-[0.65rem] uppercase tracking-[0.2em] text-gray-600 hover:text-white transition-colors duration-300">
+            <Link href="/" className="inline-block text-[0.65rem] uppercase tracking-[0.2em] text-gray-600 hover:text-white transition-colors duration-300">
               Volver al inicio
-            </a>
+            </Link>
           </div>
         </form>
       </div>

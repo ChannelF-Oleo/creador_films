@@ -1,58 +1,61 @@
 "use client";
 
-import {
-    useState,
-    useEffect,
-    useCallback,
-    useMemo,
-    memo,
-    useRef,
-} from "react";
+import { useState, useEffect, useCallback, useMemo, memo, useRef, type ReactNode } from "react";
 import Image from "next/image";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import Link from "next/link";
+import { signOut } from "firebase/auth";
+import Lightbox from "@/components/Lightbox";
+import PhotoTools from "@/components/PhotoTools";
+import useAdmin from "@/hooks/useAdmin";
+import { auth } from "@/lib/firebase";
+import { editorialForCategory, type LandingSettings } from "@/lib/editorials";
+import type { Category, Photo } from "@/lib/portfolio";
 
-// ── Tipos ─────────────────────────────────────────────────────────────────────
-interface GalleryItem {
-    src: string;
-    alt: string;
-    cat: string;
-    tall?: boolean;
-    wide?: boolean;
-}
-
-// ── Datos estáticos ───────────────────────────────────────────────────────────
-const STATIC_CATEGORIES = ["Street", "Moda", "Cultura", "Rural", "Studio"] as const;
-
-const STATIC_ITEMS: GalleryItem[] = [
-    { src: "/street2.avif", alt: "Escena urbana de calle", cat: "Calle" },
-    { src: "/moda.avif", alt: "Fotografía de moda editorial", cat: "Moda", tall: true },
-    { src: "/cultura.avif", alt: "Cultura urbana", cat: "Cultura" },
-    { src: "/urban.avif", alt: "Fotografía urbana — barrio", cat: "Calle", wide: true },
-    { src: "/moda2.avif", alt: "Editorial de moda — retrato", cat: "Moda", tall: true },
-    { src: "/rural.avif", alt: "Fotografía rural — paisaje", cat: "Rural" },
-    { src: "/moda3.avif", alt: "Moda editorial callejera", cat: "Moda" },
-    { src: "/street_studio.avif", alt: "Retrato de estudio", cat: "Studio" },
-    { src: "/moda4.avif", alt: "Moda urbana — ambiente", cat: "Moda", wide: true },
-    { src: "/rural2.avif", alt: "Rural — naturaleza", cat: "Rural" },
-    { src: "/urban2.avif", alt: "Retrato urbano", cat: "Calle", tall: true },
-    { src: "/moda5.avif", alt: "Editorial de moda", cat: "Moda" },
-    { src: "/rural3.avif", alt: "Rural — documental", cat: "Rural" },
-    { src: "/studio2.avif", alt: "Retrato de estudio", cat: "Studio", wide: true },
-    { src: "/rural4.avif", alt: "Rural — documentación", cat: "Rural" },
-    { src: "/flow_kids.avif", alt: "Cultura — comunidad", cat: "Cultura", tall: true },
-    { src: "/flow_kids2.avif", alt: "Cultura — infancia urbana", cat: "Cultura" },
-    { src: "/flow_kids3.avif", alt: "Cultura — momento espontáneo", cat: "Cultura" },
-    { src: "/flow_kid4.avif", alt: "Cultura — retrato espontáneo", cat: "Cultura" },
-];
-
-const ALL_CATEGORIES = ["Todo", ...STATIC_CATEGORIES] as const;
+// ── Constantes ────────────────────────────────────────────────────────────────
+const ALL = "todo";
+/** Proporción provisional para fotos que aún no tienen medidas guardadas */
+const FALLBACK_RATIO = 4 / 5;
+/** Columnas por ancho de pantalla; deben coincidir con las media queries de .masonry--N */
+const COLUMN_COUNTS = [1, 2, 3] as const;
+const SIZES = "(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function aspectClass(item: GalleryItem) {
-    if (item.tall) return "aspect-[3/4]";
-    if (item.wide) return "aspect-[16/9]";
-    return "aspect-[4/3]";
+const ratioOf = (p: Photo) => (p.width && p.height ? p.width / p.height : FALLBACK_RATIO);
+
+/**
+ * Reparte las fotos en columnas poniendo cada una en la columna más baja.
+ * Así el orden se lee de izquierda a derecha, a diferencia de CSS `columns`.
+ */
+function toColumns(photos: Photo[], count: number) {
+    const columns: { photo: Photo; index: number }[][] = Array.from({ length: count }, () => []);
+    const heights = new Array(count).fill(0);
+    photos.forEach((photo, index) => {
+        const shortest = heights.indexOf(Math.min(...heights));
+        columns[shortest].push({ photo, index });
+        heights[shortest] += 1 / ratioOf(photo);
+    });
+    return columns;
+}
+
+/** "Todo" alterna categorías para que no salgan todas las de una serie seguidas. */
+function interleave(categories: Category[], photos: Photo[]) {
+    const groups = categories.map((c) => photos.filter((p) => p.categoryId === c.id));
+    const result: Photo[] = [];
+    for (let i = 0; groups.some((g) => i < g.length); i++) {
+        groups.forEach((g) => { if (i < g.length) result.push(g[i]); });
+    }
+    // Fotos cuya categoría no existe: al final, para que no desaparezcan
+    const known = new Set(categories.map((c) => c.id));
+    return [...result, ...photos.filter((p) => !p.categoryId || !known.has(p.categoryId))];
+}
+
+const photoParam = () => new URLSearchParams(window.location.search).get("foto");
+
+function setPhotoParam(id: string | null, mode: "push" | "replace") {
+    const url = new URL(window.location.href);
+    if (id) url.searchParams.set("foto", id);
+    else url.searchParams.delete("foto");
+    window.history[mode === "push" ? "pushState" : "replaceState"](window.history.state, "", url);
 }
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
@@ -61,25 +64,21 @@ const FilterBar = memo(function FilterBar({
     active,
     onChange,
 }: {
-    categories: string[];
+    categories: { id: string; name: string }[];
     active: string;
-    onChange: (cat: string) => void;
+    onChange: (id: string) => void;
 }) {
     return (
-        <div
-            className="gallery-filters"
-            role="tablist"
-            aria-label="Filtrar por categoría"
-        >
+        <div className="gallery-filters" role="tablist" aria-label="Filtrar por categoría">
             {categories.map((cat) => (
                 <button
-                    key={cat}
+                    key={cat.id}
                     role="tab"
-                    aria-selected={active === cat}
-                    onClick={() => onChange(cat)}
-                    className={`gallery-filter-btn ${active === cat ? "gallery-filter-btn--active" : ""}`}
+                    aria-selected={active === cat.id}
+                    onClick={() => onChange(cat.id)}
+                    className={`gallery-filter-btn ${active === cat.id ? "gallery-filter-btn--active" : ""}`}
                 >
-                    {cat}
+                    {cat.name}
                 </button>
             ))}
         </div>
@@ -87,171 +86,177 @@ const FilterBar = memo(function FilterBar({
 });
 
 const GalleryCard = memo(function GalleryCard({
-    item,
+    photo,
+    index,
+    tag,
     onOpen,
+    tools,
 }: {
-    item: GalleryItem;
-    onOpen: (item: GalleryItem) => void;
+    photo: Photo;
+    index: number;
+    tag: string;
+    onOpen: (index: number) => void;
+    /** Barra de edición, solo con la sesión del admin */
+    tools?: ReactNode;
 }) {
-    return (
-        <div
-            className={`gallery-card ${aspectClass(item)}`}
-            onClick={() => onOpen(item)}
-            role="button"
-            tabIndex={0}
-            aria-label={`Ver imagen: ${item.alt}`}
-            onKeyDown={(e) => e.key === "Enter" && onOpen(item)}
-        >
-            <div className="gallery-card-overlay" aria-hidden="true" />
-            <Image
-                src={item.src}
-                alt={item.alt}
-                fill
-                loading="lazy"
-                sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw"
-                className="gallery-card-img"
-            />
-            <div className="gallery-card-hover" aria-hidden="true">
-                <span className="gallery-card-tag font-mono-urban">{item.cat}</span>
-            </div>
-        </div>
-    );
-});
-
-const Lightbox = memo(function Lightbox({
-    item,
-    onClose,
-}: {
-    item: GalleryItem;
-    onClose: () => void;
-}) {
-    // Cerrar con Escape
-    useEffect(() => {
-        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-        window.addEventListener("keydown", onKey);
-        // Bloquear scroll del body
-        document.body.style.overflow = "hidden";
-        return () => {
-            window.removeEventListener("keydown", onKey);
-            document.body.style.overflow = "";
-        };
-    }, [onClose]);
+    const hasSize = photo.width !== null && photo.height !== null;
 
     return (
-        <div
-            className="lightbox"
-            onClick={onClose}
-            role="dialog"
-            aria-modal="true"
-            aria-label={item.alt}
-        >
+        <div className={`gallery-item ${photo.hidden ? "gallery-item--hidden" : ""}`}>
             <button
-                className="lightbox-close font-mono-urban"
-                onClick={onClose}
-                aria-label="Cerrar lightbox"
+                type="button"
+                className="gallery-card"
+                style={hasSize ? undefined : { aspectRatio: FALLBACK_RATIO }}
+                onClick={() => onOpen(index)}
+                aria-label={`Ver imagen: ${photo.alt}`}
             >
-                ✕
+                {hasSize ? (
+                    <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        width={photo.width!}
+                        height={photo.height!}
+                        sizes={SIZES}
+                        className="gallery-card-img"
+                    />
+                ) : (
+                    <Image src={photo.src} alt={photo.alt} fill sizes={SIZES} className="gallery-card-img object-cover" />
+                )}
+                {tag && (
+                    <span className="gallery-card-hover" aria-hidden="true">
+                        <span className="gallery-card-tag font-mono-urban">{tag}</span>
+                    </span>
+                )}
+                {photo.hidden && <span className="gallery-card-hidden font-mono-urban">Oculta</span>}
             </button>
-
-            {/* Stoppropagate para que click en imagen no cierre */}
-            <div
-                className="lightbox-img-wrapper"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={1400}
-                    height={900}
-                    className="lightbox-img"
-                    priority
-                />
-            </div>
+            {tools}
         </div>
     );
 });
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function Gallery() {
-    const [active, setActive] = useState("Todo");
-    const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
-    const [categories, setCategories] = useState<string[]>([...ALL_CATEGORIES]);
-    const [dynItems, setDynItems] = useState<GalleryItem[]>([]);
+export default function Gallery({
+    categories,
+    photos: allPhotos,
+    landing,
+}: {
+    categories: Category[];
+    /** Incluye las ocultas: solo el admin las ve */
+    photos: Photo[];
+    landing: LandingSettings;
+}) {
+    const { user, busy, act } = useAdmin();
+    const photos = useMemo(() => (user ? allPhotos : allPhotos.filter((p) => !p.hidden)), [user, allPhotos]);
+    const [active, setActive] = useState(ALL);
+    const [open, setOpen] = useState<number | null>(null);
+    /** true si el visor añadió una entrada al historial, para cerrarlo con "atrás" */
+    const pushedRef = useRef(false);
 
-    // Firebase — carga una sola vez
-    useEffect(() => {
-        if (!db) return;
+    // Solo categorías con al menos una foto, en el orden guardado
+    const filters = useMemo(() => {
+        const used = categories.filter((c) => photos.some((p) => p.categoryId === c.id));
+        return [{ id: ALL, name: "Todo" }, ...used];
+    }, [categories, photos]);
 
-        (async () => {
-            try {
-                const [catSnap, photosSnap] = await Promise.all([
-                    getDocs(collection(db, "categories")),
-                    getDocs(query(collection(db, "photos"), orderBy("createdAt", "desc"))),
-                ]);
+    const nameById = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
+    const editorialById = useMemo(
+        () => new Map(categories.map((c) => [c.id, editorialForCategory(c.slug)])),
+        [categories]
+    );
 
-                const dynamicCats: string[] = [];
-                catSnap.forEach((doc) => dynamicCats.push(doc.data().name as string));
-                const merged = Array.from(new Set([...STATIC_CATEGORIES, ...dynamicCats]));
-                setCategories(["Todo", ...merged]);
+    const filtered = useMemo(
+        () => (active === ALL ? interleave(categories, photos) : photos.filter((p) => p.categoryId === active)),
+        [active, categories, photos]
+    );
 
-                const dynamicPhotos: GalleryItem[] = [];
-                photosSnap.forEach((doc) => {
-                    const d = doc.data();
-                    dynamicPhotos.push({
-                        src: d.src,
-                        alt: d.alt,
-                        cat: d.cat,
-                        tall: d.tall,
-                        wide: d.wide,
-                    });
-                });
-                setDynItems(dynamicPhotos);
-            } catch (err) {
-                console.error("Gallery: error cargando datos de Firebase", err);
-            }
-        })();
+    const layouts = useMemo(
+        () => COLUMN_COUNTS.map((count) => ({ count, columns: toColumns(filtered, count) })),
+        [filtered]
+    );
+
+    const openAt = useCallback((index: number) => {
+        setOpen(index);
+        setPhotoParam(filtered[index].id, "push");
+        pushedRef.current = true;
+    }, [filtered]);
+
+    const changeIndex = useCallback((index: number) => {
+        setOpen(index);
+        setPhotoParam(filtered[index].id, "replace");
+    }, [filtered]);
+
+    const close = useCallback(() => {
+        if (pushedRef.current) {
+            // Vuelve a la entrada anterior; el popstate cierra el visor
+            window.history.back();
+        } else {
+            setPhotoParam(null, "replace");
+            setOpen(null);
+        }
     }, []);
 
-    // Items combinados — recalcula solo cuando dynItems cambia
-    const allItems = useMemo(
-        () => [...dynItems, ...STATIC_ITEMS],
-        [dynItems]
-    );
+    // Enlace directo (?foto=id) y botón "atrás"
+    useEffect(() => {
+        const sync = () => {
+            const id = photoParam();
+            const index = id ? filtered.findIndex((p) => p.id === id) : -1;
+            if (index === -1) pushedRef.current = false;
+            setOpen(index === -1 ? null : index);
+        };
+        sync();
+        window.addEventListener("popstate", sync);
+        return () => window.removeEventListener("popstate", sync);
+        // Solo al montar: un cambio de filtro no debe reabrir el visor
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    // Filtrado — recalcula solo cuando active o allItems cambia
-    const filtered = useMemo(
-        () => active === "Todo" ? allItems : allItems.filter((i) => i.cat === active),
-        [active, allItems]
-    );
-
-    const openLightbox = useCallback((item: GalleryItem) => setLightbox(item), []);
-    const closeLightbox = useCallback(() => setLightbox(null), []);
+    const changeFilter = useCallback((id: string) => {
+        setActive(id);
+        setOpen(null);
+    }, []);
 
     return (
-        <section
-            id="trabajo"
-            className="gallery-section"
-            aria-label="Portafolio de trabajo"
-        >
-            <FilterBar
-                categories={categories}
-                active={active}
-                onChange={setActive}
-            />
+        <section id="trabajo" className="gallery-section" aria-label="Portafolio de trabajo">
+            {user && (
+                <div className="gallery-admin-bar font-mono-urban">
+                    <span>Modo edición</span>
+                    <Link href="/admin/dashboard">Subir fotos y categorías</Link>
+                    <button onClick={() => signOut(auth)}>Cerrar sesión</button>
+                </div>
+            )}
 
-            {/* Masonry grid */}
-            <div className="gallery-grid">
-                {filtered.map((item, i) => (
-                    <GalleryCard
-                        key={`${item.src}-${i}`}
-                        item={item}
-                        onOpen={openLightbox}
-                    />
-                ))}
-            </div>
+            <FilterBar categories={filters} active={active} onChange={changeFilter} />
 
-            {lightbox && (
-                <Lightbox item={lightbox} onClose={closeLightbox} />
+            {/* Una maqueta por número de columnas; CSS muestra solo la que corresponde */}
+            {layouts.map(({ count, columns }) => (
+                <div key={count} className={`masonry masonry--${count}`}>
+                    {columns.map((column, c) => (
+                        <div key={c} className="masonry-column">
+                            {column.map(({ photo, index }) => (
+                                <GalleryCard
+                                    key={photo.id}
+                                    photo={photo}
+                                    index={index}
+                                    tag={active === ALL ? nameById.get(photo.categoryId ?? "") ?? "" : ""}
+                                    onOpen={openAt}
+                                    tools={user && (
+                                        <PhotoTools
+                                            photo={photo}
+                                            editorial={editorialById.get(photo.categoryId ?? "") ?? null}
+                                            landing={landing}
+                                            busy={busy}
+                                            act={act}
+                                        />
+                                    )}
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            ))}
+
+            {open !== null && filtered[open] && (
+                <Lightbox items={filtered} index={open} onIndexChange={changeIndex} onClose={close} />
             )}
         </section>
     );

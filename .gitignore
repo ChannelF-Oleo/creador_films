@@ -46,3 +46,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# firebase service account (nunca subir al repo)
+*firebase-adminsdk*.json
+service-account*.json

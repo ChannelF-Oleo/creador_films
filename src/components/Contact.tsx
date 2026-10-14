@@ -3,8 +3,13 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import type { LandingImage } from "@/lib/landing";
 
-export default function Contact() {
+// Foto de respaldo si Firestore no responde o no hay foto elegida
+const FALLBACK = { src: "/bookings.avif", alt: "Reservas — Creador Films" };
+
+export default function Contact({ photo }: { photo: LandingImage | null }) {
+    const image = photo ?? FALLBACK;
     const { t, lang } = useLanguage();
     const [nombre, setNombre] = useState("");
     const [plan, setPlan] = useState("");
@@ -39,12 +44,11 @@ export default function Contact() {
                 {/* Visual */}
                 <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#111]">
                     <Image
-                        src="/bookings.avif"
-                        alt="Bookings"
+                        src={image.src}
+                        alt={image.alt}
                         fill
                         className="object-contain object-top"
                         sizes="(max-width: 768px) 100vw, 50vw"
-                        priority
                     />
                 </div>
 
