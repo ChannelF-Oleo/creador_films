@@ -3,7 +3,8 @@
 import { updateTag } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
-import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
+import { adminDb } from "@/lib/firebaseAdmin";
+import { verifyIdToken } from "@/lib/verifyIdToken";
 import { editorialForCategory, LANDING_SLOTS, type LandingSlot } from "@/lib/editorials";
 
 // Las reglas de Firestore/Storage usan el mismo UID
@@ -14,8 +15,8 @@ type Result = { ok: true } | { ok: false; error: string };
 // ── Helpers ───────────────────────────────────────────────────────────────────
 /** Toda acción empieza aquí: sin un token válido del admin no se escribe nada. */
 async function requireAdmin(idToken: string) {
-    const decoded = await adminAuth().verifyIdToken(idToken);
-    if (decoded.uid !== ADMIN_UID) throw new Error("No autorizado");
+    const uid = await verifyIdToken(idToken);
+    if (uid !== ADMIN_UID) throw new Error("No autorizado");
 }
 
 async function run(idToken: string, fn: () => Promise<void>, tags: string[]): Promise<Result> {
