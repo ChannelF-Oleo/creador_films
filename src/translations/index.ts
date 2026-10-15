@@ -53,13 +53,6 @@ export const translations = {
                     pull: "«Pasarela\ndisruptiva»",
                 },
                 {
-                    slug: "rural",
-                    tag: "RURAL",
-                    title: "salvaje",
-                    copy: "Donde el asfalto se rinde y empieza la tierra, la esencia respira diferente. Lejos del ruido, la belleza más brutal es la que no pidió permiso. Esta serie es un viaje al borde — al lugar donde somos parte de algo que nos trasciende.",
-                    pull: "«Cimarronaje,\nlibertad»",
-                },
-                {
                     slug: "studio",
                     tag: "STUDIO",
                     title: "studio",
@@ -72,6 +65,13 @@ export const translations = {
                     title: "bts - Detrás de cámaras",
                     copy: "El esqueleto del concepto. Entre trípodes y voltajes se articula la visión que otros solo ven terminada. Es la técnica al servicio de la intuición; el desorden necesario antes de la captura final.",
                     pull: "«La estética\nse construye»",
+                },
+                {
+                    slug: "rural",
+                    tag: "RURAL",
+                    title: "salvaje",
+                    copy: "Donde el asfalto se rinde y empieza la tierra, la esencia respira diferente. Lejos del ruido, la belleza más brutal es la que no pidió permiso. Esta serie es un viaje al borde — al lugar donde somos parte de algo que nos trasciende.",
+                    pull: "«Cimarronaje,\nlibertad»",
                 },
                 {
                     slug: "kids",
@@ -213,13 +213,6 @@ export const translations = {
                     pull: "«Disruptive\nrunway»",
                 },
                 {
-                    slug: "rural",
-                    tag: "RURAL",
-                    title: "Wild",
-                    copy: "Where the asphalt surrenders and the earth begins, essence breathes differently. Away from the noise, the most brutal beauty is the one that didn't ask for permission. This series is a journey to the edge — to the place where we are part of something that transcends us.",
-                    pull: "«Marronage,\nfreedom»",
-                },
-                {
                     slug: "studio",
                     tag: "STUDIO",
                     title: "Dominion",
@@ -232,6 +225,13 @@ export const translations = {
                     title: "Mechanics",
                     copy: "The skeleton of the concept. Amidst tripods and voltages, the vision that others only see finished is articulated. It is technique at the service of intuition; the necessary chaos before the final capture.",
                     pull: "“Aesthetics\nare built”",
+                },
+                {
+                    slug: "rural",
+                    tag: "RURAL",
+                    title: "Wild",
+                    copy: "Where the asphalt surrenders and the earth begins, essence breathes differently. Away from the noise, the most brutal beauty is the one that didn't ask for permission. This series is a journey to the edge — to the place where we are part of something that transcends us.",
+                    pull: "«Marronage,\nfreedom»",
                 },
                 {
                     slug: "kids",
