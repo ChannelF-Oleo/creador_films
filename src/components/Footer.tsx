@@ -15,6 +15,7 @@ export default function Footer({ year }: { year: number }) {
                     <a href="#hero" className="inline-block hover:opacity-80 transition-opacity duration-300">
                         <Image
                             src="/logo.png"
+                            unoptimized
                             alt="Creador Films"
                             width={300}
                             height={120}

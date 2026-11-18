@@ -147,6 +147,7 @@ export default function AdminDashboard() {
         async () => {
           // 3. Guardar en Firestore desde el servidor, que además refresca el portafolio
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setPhotoSuccess("Generando miniaturas…");
           const result = await createPhoto(await user.getIdToken(), {
             src: downloadURL,
             storagePath,

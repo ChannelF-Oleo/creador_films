@@ -70,6 +70,7 @@ export default function Navbar() {
                     <Link href="/" className="navbar-logo" aria-label="El Chef de las Fotos — Inicio">
                         <Image
                             src="/logo.png"
+                            unoptimized
                             alt=""
                             width={200}
                             height={80}

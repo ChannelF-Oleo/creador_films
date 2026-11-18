@@ -2,8 +2,9 @@
 
 import { updateTag } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
-import { getStorage } from "firebase-admin/storage";
-import { adminDb } from "@/lib/firebaseAdmin";
+import { adminDb, adminStorage } from "@/lib/firebaseAdmin";
+import { storageLocation } from "@/lib/thumbs";
+import { createThumbs, deleteThumbs } from "@/lib/thumbsServer";
 import { verifyIdToken } from "@/lib/verifyIdToken";
 import { editorialForCategory, LANDING_SLOTS, type LandingSlot } from "@/lib/editorials";
 
@@ -51,11 +52,6 @@ async function editorialOf(photoId: string) {
     return editorial;
 }
 
-/** Ruta en Storage a partir de la URL de descarga */
-function storageLocation(src: string) {
-    const m = /\/v0\/b\/([^/]+)\/o\/([^?]+)/.exec(src);
-    return m ? { bucket: m[1], path: decodeURIComponent(m[2]) } : null;
-}
 
 function slugify(name: string) {
     return name
@@ -76,6 +72,11 @@ export async function createPhoto(
         if (!cat.exists) throw new Error("La categoría no existe");
 
         // Primera de su categoría (sin orderBy: evita exigir un índice compuesto)
+        // Miniaturas antes de guardar: el portafolio las pide en cuanto la foto existe
+        const location = storageLocation(photo.src);
+        if (!location || location.path !== photo.storagePath) throw new Error("La URL de la foto no coincide con su ruta en Storage");
+        await createThumbs(location.bucket, location.path);
+
         const siblings = await photos().where("categoryId", "==", photo.categoryId).get();
         const order = Math.min(1, ...siblings.docs.map((s) => (s.data().order as number | undefined) ?? 0)) - 1;
 
@@ -123,7 +124,8 @@ export async function deletePhoto(idToken: string, photoId: string) {
             ? { bucket: storageLocation(d.src)?.bucket, path: d.storagePath as string }
             : storageLocation(d.src);
         if (location?.path) {
-            await getStorage().bucket(location.bucket).file(location.path).delete({ ignoreNotFound: true });
+            await adminStorage().bucket(location.bucket).file(location.path).delete({ ignoreNotFound: true });
+            if (location.bucket) await deleteThumbs(location.bucket, location.path);
         }
         await ref.delete();
     }, ["photos", "landing"]);
