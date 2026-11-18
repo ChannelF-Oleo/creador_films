@@ -1,17 +1,45 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Bodoni_Moda, Sedgwick_Ave_Display, UnifrakturMaguntia } from "next/font/google";
 import "./globals.css";
+import { SITE_URL, jsonLd, siteGraph } from "@/lib/site";
+
+const gothic = UnifrakturMaguntia({ weight: "400", subsets: ["latin"], variable: "--nf-gothic", display: "swap" });
+const serif = Bodoni_Moda({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+  variable: "--nf-serif",
+  display: "swap",
+});
+// Solo se usa en titulares decorativos debajo del primer pantallazo: sin preload
+const graffiti = Sedgwick_Ave_Display({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--nf-graffiti",
+  display: "swap",
+  preload: false,
+});
+
+const TITLE = "Fotógrafo en Santo Domingo | El Chef de las Fotos — Creador Films";
+const DESCRIPTION =
+  "Edwin de León, «el chef de las fotos»: fotografía urbana, editorial y de moda en Santo Domingo, República Dominicana. Sesiones en calle o estudio. Reserva por WhatsApp.";
+const OG_IMAGE = {
+  url: "/og.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Sesión de fotografía urbana en Santo Domingo por Creador Films",
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://elchefdelasfotos.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "CREADOR FILMS — Fotografía Urbana Editorial",
-    template: "%s | CREADOR FILMS",
+    default: TITLE,
+    template: "%s | Creador Films",
   },
-  description: "Fotografía editorial, urbana, moda y cultura. La mirada que eleva el asfalto al arte en la escena underground.",
-  keywords: ["fotografía", "fotografía urbana", "editorial", "moda", "underground", "street photography", "República Dominicana", "arte urbano", "creador films"],
-  authors: [{ name: "Creador Films" }],
-  creator: "Creador Films",
+  description: DESCRIPTION,
+  authors: [{ name: "Edwin de León", url: SITE_URL }],
+  creator: "Edwin de León",
   publisher: "Creador Films",
   formatDetection: {
     email: false,
@@ -22,26 +50,19 @@ export const metadata: Metadata = {
     icon: "/camera_favicon_32px.ico",
   },
   openGraph: {
-    title: "CREADOR FILMS — Estética del Asfalto",
-    description: "Fotografía documental, editorial y de moda desde las calles.",
-    url: "https://elchefdelasfotos.com",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
     siteName: "Creador Films",
-    locale: "es_ES",
+    locale: "es_DO",
     type: "website",
-    images: [
-      {
-        url: "/Hero.avif",
-        width: 1200,
-        height: 630,
-        alt: "Creador Films - Estética del Asfalto",
-      },
-    ],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CREADOR FILMS — Fotografía Urbana Editorial",
-    description: "Fotografía editorial, urbana, moda y cultura.",
-    images: ["/Hero.avif"],
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [OG_IMAGE.url],
   },
   robots: {
     index: true,
@@ -56,7 +77,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export default function RootLayout({
   children,
@@ -64,13 +85,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="es">
+      <html lang="es" className={`${gothic.variable} ${serif.variable} ${graffiti.variable}`}>
         <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link
-            href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Bodoni+Moda:ital,opsz,wght@0,6..96,300;0,6..96,400;0,6..96,700;1,6..96,300;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Rubik+Dirt&family=Yeseva+One&family=Sedgwick+Ave+Display&display=swap"
-            rel="stylesheet"
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: jsonLd(siteGraph) }}
           />
         </head>
         <body>

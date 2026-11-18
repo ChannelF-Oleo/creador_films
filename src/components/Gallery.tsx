@@ -18,6 +18,8 @@ const FALLBACK_RATIO = 4 / 5;
 /** Columnas por ancho de pantalla; deben coincidir con las media queries de .masonry--N */
 const COLUMN_COUNTS = [1, 2, 3] as const;
 const SIZES = "(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw";
+/** Mismas media queries que .masonry--N en globals.css */
+const COLUMN_QUERIES = ["(max-width: 767px)", "(min-width: 768px) and (max-width: 1023px)", "(min-width: 1024px)"] as const;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const ratioOf = (p: Photo) => (p.width && p.height ? p.width / p.height : FALLBACK_RATIO);
@@ -56,6 +58,26 @@ function setPhotoParam(id: string | null, mode: "push" | "replace") {
     if (id) url.searchParams.set("foto", id);
     else url.searchParams.delete("foto");
     window.history[mode === "push" ? "pushState" : "replaceState"](window.history.state, "", url);
+}
+
+/**
+ * Número de columnas según el ancho, o null antes de hidratar.
+ * El HTML del servidor trae las tres maquetas (CSS muestra la correcta, sin saltos);
+ * ya en el navegador se monta solo la visible para no triplicar el DOM.
+ */
+function useColumnCount() {
+    const [count, setCount] = useState<number | null>(null);
+    useEffect(() => {
+        const lists = COLUMN_QUERIES.map((q) => window.matchMedia(q));
+        const update = () => {
+            const i = lists.findIndex((l) => l.matches);
+            setCount(i === -1 ? null : COLUMN_COUNTS[i]);
+        };
+        update();
+        lists.forEach((l) => l.addEventListener("change", update));
+        return () => lists.forEach((l) => l.removeEventListener("change", update));
+    }, []);
+    return count;
 }
 
 // ── Sub-componentes ───────────────────────────────────────────────────────────
@@ -169,9 +191,14 @@ export default function Gallery({
         [active, categories, photos]
     );
 
+    const columnCount = useColumnCount();
     const layouts = useMemo(
-        () => COLUMN_COUNTS.map((count) => ({ count, columns: toColumns(filtered, count) })),
-        [filtered]
+        () =>
+            COLUMN_COUNTS.filter((count) => columnCount === null || count === columnCount).map((count) => ({
+                count,
+                columns: toColumns(filtered, count),
+            })),
+        [filtered, columnCount]
     );
 
     const openAt = useCallback((index: number) => {
@@ -227,7 +254,7 @@ export default function Gallery({
 
             <FilterBar categories={filters} active={active} onChange={changeFilter} />
 
-            {/* Una maqueta por número de columnas; CSS muestra solo la que corresponde */}
+            {/* Servidor: una maqueta por número de columnas y CSS muestra la que toca. Cliente: solo la visible. */}
             {layouts.map(({ count, columns }) => (
                 <div key={count} className={`masonry masonry--${count}`}>
                     {columns.map((column, c) => (

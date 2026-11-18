@@ -9,6 +9,11 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { getCurrentYear } from "@/lib/year";
 import { getLanding } from "@/lib/landing";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   // Fotos elegidas por el fotógrafo desde /portafolio; los textos siguen en translations

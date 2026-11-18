@@ -9,7 +9,7 @@ export const translations = {
             reserva: "Reserva"
         },
         hero: {
-            eyebrow: "Estética del Asfalto",
+            eyebrow: "Estética del Asfalto · Santo Domingo",
             title: "El chef de las fotos",
             services: ["Fotografía Documental", "Editorial", "Moda Urbana"],
             cta1: "Ver Portafolio",
@@ -19,7 +19,7 @@ export const translations = {
         about: {
             chef: "el chef",
             description1: "Mi trabajo captura la tensión entre lo efímero y lo eterno — el instante en que una esquina cualquiera se convierte en escenario.",
-            description2: "Trabajo con marcas, artistas y comunidades. Desde editoriales de moda hasta documentales rurales; siempre con la misma honestidad visual.",
+            description2: "Soy Edwin de León, fotógrafo urbano y editorial en Santo Domingo, República Dominicana. Trabajo con marcas, artistas y comunidades: desde editoriales de moda hasta documentales rurales, siempre con la misma honestidad visual.",
             ingredientsTitle: "Ingredientes:",
             cta: "Trabajemos →",
             ingredients: [
@@ -169,7 +169,7 @@ export const translations = {
             reserva: "Booking"
         },
         hero: {
-            eyebrow: "Asphalt Aesthetics",
+            eyebrow: "Asphalt Aesthetics · Santo Domingo",
             title: "The chef of photos",
             services: ["Documentary Photography", "Editorial", "Urban Fashion"],
             cta1: "View Portfolio",
@@ -179,7 +179,7 @@ export const translations = {
         about: {
             chef: "the chef",
             description1: "My work captures the tension between the fleeting and the eternal — the moment when any corner becomes a stage.",
-            description2: "I work with brands, artists, and communities. From fashion editorials to rural documentaries; always with the same visual honesty.",
+            description2: "I'm Edwin de León, an urban and editorial photographer based in Santo Domingo, Dominican Republic. I work with brands, artists, and communities: from fashion editorials to rural documentaries, always with the same visual honesty.",
             ingredientsTitle: "Ingredients:",
             cta: "Let's work →",
             ingredients: [

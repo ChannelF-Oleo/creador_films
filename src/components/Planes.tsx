@@ -59,7 +59,7 @@ export default function Planes() {
 
                             <div>
                                 <h3 
-                                    className="font-['Sedgwick_Ave_Display'] text-4xl text-[#F5F0E8] mb-4 tracking-wider transform -rotate-1 origin-left" 
+                                    className="font-(family-name:--font-graffiti) text-4xl text-[#F5F0E8] mb-4 tracking-wider transform -rotate-1 origin-left" 
                                     style={{ WebkitTextStroke: "1px #8A8A8A" }}
                                 >
                                     {plan.name}

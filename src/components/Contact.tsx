@@ -56,7 +56,7 @@ export default function Contact({ photo }: { photo: LandingImage | null }) {
                 <div className="flex flex-col">
                     <p className="text-[0.75rem] tracking-[0.3em] uppercase text-[#8A8A8A] mb-4">— {t.contact.eyebrow}</p>
                         <h2 
-                        className="font-['Sedgwick_Ave_Display'] text-[clamp(2.8rem,7vw,5rem)] leading-[0.9] mb-12 tracking-wider transform -rotate-2 inline-block shadow-none"
+                        className="font-(family-name:--font-graffiti) text-[clamp(2.8rem,7vw,5rem)] leading-[0.9] mb-12 tracking-wider transform -rotate-2 inline-block shadow-none"
                         style={{ 
                             color: "#F5F0E8", 
                             WebkitTextStroke: "1px #8A8A8A",

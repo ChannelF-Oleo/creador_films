@@ -16,7 +16,7 @@ export default function Statement() {
             <div className="max-w-[900px] mx-auto w-full flex flex-col items-center gap-10" ref={ref}>
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-[#8A8A8A] to-transparent" />
                 <blockquote 
-                    className="font-['Sedgwick_Ave_Display'] text-[clamp(2rem,6vw,4rem)] text-center leading-[1.2] tracking-wider transform -rotate-2 my-8"
+                    className="font-(family-name:--font-graffiti) text-[clamp(2rem,6vw,4rem)] text-center leading-[1.2] tracking-wider transform -rotate-2 my-8"
                     style={{ 
                         opacity: 0.95,
                         color: "#F5F0E8", 

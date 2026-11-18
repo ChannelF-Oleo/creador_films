@@ -14,8 +14,9 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Tipografía */
-  --font-gothic: 'UnifrakturMaguntia', cursive;
-  --font-serif: 'Bodoni Moda', serif;
+  --font-gothic: var(--nf-gothic), 'UnifrakturMaguntia', cursive;
+  --font-serif: var(--nf-serif), 'Bodoni Moda', serif;
+  --font-graffiti: var(--nf-graffiti), 'Sedgwick Ave Display', cursive;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Spacing / sizing reutilizable */

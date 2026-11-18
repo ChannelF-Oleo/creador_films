@@ -44,6 +44,7 @@ export default function Hero({ photo }: { photo: LandingImage | null }) {
 
                     <h1 className="font-gothic hero-title animate-fadeUp [animation-delay:0.2s]">
                         {t.hero.title.split(" ").slice(0, 2).join(" ")}
+                        {" "}
                         <br className="hidden sm:block" />
                         {t.hero.title.split(" ").slice(2).join(" ")}
                     </h1>

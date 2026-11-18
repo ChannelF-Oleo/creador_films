@@ -26,17 +26,18 @@ export default function Footer({ year }: { year: number }) {
                 </div>
 
                 {/* 2. Contacts */}
-                <div className="flex flex-col items-center gap-4 text-[0.65rem] sm:text-[0.7rem] tracking-[0.15em] sm:tracking-[0.2em] uppercase text-[#8A8A8A]">
-                    <a href="https://www.instagram.com/creador.films/" target="_blank" rel="noopener noreferrer" className="hover:text-[#F5F0E8] transition-colors duration-300">
+                <div className="flex flex-col items-center gap-1 text-[0.65rem] sm:text-[0.7rem] tracking-[0.15em] sm:tracking-[0.2em] uppercase text-[#8A8A8A]">
+                    <a href="https://www.instagram.com/creador.films/" target="_blank" rel="noopener noreferrer" className="py-3 hover:text-[#F5F0E8] transition-colors duration-300">
                         Instagram
                     </a>
-                    <a href="mailto:creadorfilms89@gmail.com" className="hover:text-[#F5F0E8] transition-colors duration-300">
+                    <a href="mailto:creadorfilms89@gmail.com" className="py-3 hover:text-[#F5F0E8] transition-colors duration-300">
                         creadorfilms89@gmail.com
                     </a>
-                    <a href="tel:+18292971687" className="hover:text-[#F5F0E8] transition-colors duration-300 mb-2">
+                    <a href="tel:+18292971687" className="py-3 hover:text-[#F5F0E8] transition-colors duration-300">
                         +1 829-297-1687
                     </a>
-                    <a href="/admin/login" className="text-[#8A8A8A]/50 hover:text-[#F5F0E8] transition-colors duration-300 flex items-center gap-2 mt-4 pt-4 border-t border-[#8A8A8A]/20">
+                    <p className="mb-2">Santo Domingo, República Dominicana</p>
+                    <a href="/admin/login" rel="nofollow" className="py-3 text-[#8A8A8A]/50 hover:text-[#F5F0E8] transition-colors duration-300 flex items-center gap-2 mt-4 pt-4 border-t border-[#8A8A8A]/20">
                         {t.footer.admin}
                     </a>
                 </div>
